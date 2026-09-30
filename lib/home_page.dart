@@ -100,6 +100,93 @@ class HomePage extends StatelessWidget {
               }).toList(),
             ),
           ),
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.all(12),
+              itemCount: noticias.length,
+              itemBuilder: (context, index) {
+                final noticia = noticias[index];
+
+                return Card(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  elevation: 0,
+                  color: Colors.white,
+                  clipBehavior: Clip.antiAlias,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    side: const BorderSide(
+                      color: Color(0xFFCBD2D9),
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      Container(
+                        width: double.infinity,
+                        height: 120,
+                        color: const Color(0xFFE4E9Ef),
+                        child: const Icon(Icons.image_outlined),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFEFF4F8),
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                  child: Text(noticia['categoria']),
+                                ),
+                                const SizedBox(
+                                  width: 15,
+                                ),
+                                Text(
+                                  noticia['data'],
+                                  style: const TextStyle(
+                                    color: Color(0xFF858D96),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              noticia['titulo'],
+                              style: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF1b2A4A),
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis, //...
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              noticia['resumo'],
+                              style: const TextStyle(
+                                fontSize: 13,
+                                color: Color(0xFF5B6B79),
+                              ),
+                              maxLines: 3,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
         ],
       ),
     );
