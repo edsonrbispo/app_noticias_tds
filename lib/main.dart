@@ -1,4 +1,5 @@
 import 'package:app_noticias/home_page.dart';
+import 'package:app_noticias/teste_api.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -15,7 +16,7 @@ void main() {
           elevation: 4.0,
         ),
       ),
-      home: const HomePage(),
+      home: const TesteApi(),
     ),
   );
 }
