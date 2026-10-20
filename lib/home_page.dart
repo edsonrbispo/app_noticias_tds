@@ -17,6 +17,22 @@ class _HomePageState extends State<HomePage> {
 
   static final List<String> categorias = ["Todas"];
 
+  bool _buscando = false;
+  String _textoPesquisa = '';
+
+  List<Noticia> aplicarFiltro(List<Noticia> noticias) {
+    if (_textoPesquisa.isNotEmpty) {
+      return noticias.where((noticia) {
+        return noticia.titulo.toLowerCase().contains(
+              _textoPesquisa.toLowerCase(),
+            ) ||
+            noticia.resumo.toLowerCase().contains(_textoPesquisa.toLowerCase());
+      }).toList();
+    }
+
+    return noticias;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -27,15 +43,37 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Image.asset(
-          'assets/img/logotipo.png',
-          height: 20,
-        ),
+        title: _buscando
+            ? TextField(
+                autofocus: true,
+                decoration: const InputDecoration(
+                  hintText: 'Pesquisar...',
+                ),
+                onChanged: (valor) {
+                  setState(() {
+                    _textoPesquisa = valor;
+                  });
+                },
+              )
+            : Image.asset(
+                'assets/img/logotipo.png',
+                height: 20,
+              ),
         centerTitle: true,
         actions: [
-          const Padding(
-            padding: EdgeInsets.only(right: 12),
-            child: Icon(Icons.search),
+          Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: IconButton(
+              onPressed: () {
+                setState(() {
+                  _buscando = !_buscando;
+                  if (!_buscando) {
+                    _textoPesquisa = '';
+                  }
+                });
+              },
+              icon: Icon(_buscando ? Icons.close : Icons.search),
+            ),
           ),
         ],
       ),
@@ -120,7 +158,9 @@ class _HomePageState extends State<HomePage> {
                   );
                 }
 
-                final noticias = asyncSnapshot.data ?? [];
+                final todasNoticias = asyncSnapshot.data ?? [];
+
+                final noticias = aplicarFiltro(todasNoticias);
 
                 return ListView.builder(
                   padding: const EdgeInsets.all(12),
