@@ -1,4 +1,5 @@
 import 'package:app_noticias/detalhe_noticia_page.dart';
+import 'package:app_noticias/login_page.dart';
 import 'package:app_noticias/models/categoria.dart';
 import 'package:app_noticias/models/noticia.dart';
 import 'package:app_noticias/services/categorias_services.dart';
@@ -23,6 +24,11 @@ class _HomePageState extends State<HomePage> {
 
   bool _buscando = false;
   String _textoPesquisa = '';
+
+  void carregarDados() {
+    _listaNoticias = _noticiasService.getNoticias();
+    carregarCategorias();
+  }
 
   Future<void> carregarCategorias() async {
     try {
@@ -131,6 +137,20 @@ class _HomePageState extends State<HomePage> {
                 );
               },
             ),
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.login),
+              title: const Text('Entrar'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const LoginPage(),
+                  ),
+                );
+              },
+            ),
           ],
         ),
       ),
@@ -192,7 +212,30 @@ class _HomePageState extends State<HomePage> {
 
                 if (asyncSnapshot.hasError) {
                   return Center(
-                    child: Text('${asyncSnapshot.error}'),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          asyncSnapshot.error.toString().replaceFirst(
+                            'Exception:',
+                            '',
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(
+                          height: 15,
+                        ),
+                        ElevatedButton.icon(
+                          onPressed: () {
+                            setState(() {
+                              carregarDados();
+                            });
+                          },
+                          icon: const Icon(Icons.refresh),
+                          label: const Text('Tentar Novamente'),
+                        ),
+                      ],
+                    ),
                   );
                 }
 
