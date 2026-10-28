@@ -1,13 +1,14 @@
 info:
   name: Login Autenticação
   type: http
+  seq: 1
 
 http:
   method: POST
   url: http://127.0.0.1:8000/api/login
   params:
-    - name: ""
-      value: ""
+    - name: ''
+      value: ''
       type: query
   body:
     type: form-urlencoded
@@ -15,7 +16,7 @@ http:
       - name: email
         value: edson@senac.br
       - name: password
-        value: "12345678"
+        value: '12345678'
   auth: inherit
 
 settings:
