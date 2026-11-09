@@ -33,8 +33,6 @@ class NoticiasService {
     try {
       final token = await _loginService.getToken();
 
-      final int status;
-
       if (imagemArquivo != null) {
         final request = http.MultipartRequest(
           'POST',
@@ -49,7 +47,63 @@ class NoticiasService {
         request.files.add(
           await http.MultipartFile.fromPath('imagem', imagemArquivo.path),
         );
-      } else {}
+
+        final resposta = await request.send();
+
+        if (resposta.statusCode != 200 && resposta.statusCode != 201) {
+          throw Exception(
+            'Não foi possível cadastrar a notícia.',
+          );
+        }
+      } else {
+        throw Exception(
+          'Não foi possível cadastrar a notícia. Todos os campos são obrigatórios.',
+        );
+      }
+    } catch (e) {
+      throw Exception('$e');
+    }
+  }
+
+  Future<void> editarNoticia({
+    required int id,
+    required String titulo,
+    required String resumo,
+    required String conteudo,
+    required int categoriaId,
+    File? imagemArquivo,
+  }) async {
+    try {
+      final token = await _loginService.getToken();
+
+      if (imagemArquivo != null) {
+        final request = http.MultipartRequest(
+          'POST',
+          Uri.parse('$baseUrl/noticias/$id'),
+        );
+        request.headers['Accept'] = 'application/json';
+        request.headers['Authorization'] = 'Bearer $token';
+        request.fields['_method'] = 'PUT';
+        request.fields['titulo'] = titulo;
+        request.fields['resumo'] = resumo;
+        request.fields['conteudo'] = conteudo;
+        request.fields['categoria_id'] = categoriaId.toString();
+        request.files.add(
+          await http.MultipartFile.fromPath('imagem', imagemArquivo.path),
+        );
+
+        final resposta = await request.send();
+
+        if (resposta.statusCode != 200) {
+          throw Exception(
+            'Não foi possível cadastrar a notícia.',
+          );
+        }
+      } else {
+        throw Exception(
+          'Não foi possível cadastrar a notícia. Todos os campos são obrigatórios.',
+        );
+      }
     } catch (e) {
       throw Exception('$e');
     }
