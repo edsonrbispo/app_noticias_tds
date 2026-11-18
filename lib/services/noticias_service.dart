@@ -28,6 +28,7 @@ class NoticiasService {
     required String resumo,
     required String conteudo,
     required int categoriaId,
+    required bool status,
     File? imagemArquivo,
   }) async {
     try {
@@ -44,11 +45,16 @@ class NoticiasService {
         request.fields['resumo'] = resumo;
         request.fields['conteudo'] = conteudo;
         request.fields['categoria_id'] = categoriaId.toString();
+        request.fields['status'] = status ? '1' : '0';
         request.files.add(
           await http.MultipartFile.fromPath('imagem', imagemArquivo.path),
         );
 
         final resposta = await request.send();
+
+        final corpoResposta = await resposta.stream.bytesToString();
+        print('Status: ${resposta.statusCode}');
+        print('Resposta da API: $corpoResposta');
 
         if (resposta.statusCode != 200 && resposta.statusCode != 201) {
           throw Exception(
@@ -71,38 +77,61 @@ class NoticiasService {
     required String resumo,
     required String conteudo,
     required int categoriaId,
+    required bool status,
     File? imagemArquivo,
   }) async {
     try {
       final token = await _loginService.getToken();
 
+      final request = http.MultipartRequest(
+        'POST',
+        Uri.parse('$baseUrl/noticias/$id'),
+      );
+      request.headers['Accept'] = 'application/json';
+      request.headers['Authorization'] = 'Bearer $token';
+      request.fields['_method'] = 'PUT';
+      request.fields['titulo'] = titulo;
+      request.fields['resumo'] = resumo;
+      request.fields['conteudo'] = conteudo;
+      request.fields['status'] = status ? '1' : '0';
+      request.fields['categoria_id'] = categoriaId.toString();
+
       if (imagemArquivo != null) {
-        final request = http.MultipartRequest(
-          'POST',
-          Uri.parse('$baseUrl/noticias/$id'),
-        );
-        request.headers['Accept'] = 'application/json';
-        request.headers['Authorization'] = 'Bearer $token';
-        request.fields['_method'] = 'PUT';
-        request.fields['titulo'] = titulo;
-        request.fields['resumo'] = resumo;
-        request.fields['conteudo'] = conteudo;
-        request.fields['categoria_id'] = categoriaId.toString();
         request.files.add(
           await http.MultipartFile.fromPath('imagem', imagemArquivo.path),
         );
+      }
 
-        final resposta = await request.send();
+      final resposta = await request.send();
 
-        if (resposta.statusCode != 200) {
-          throw Exception(
-            'Não foi possível cadastrar a notícia.',
-          );
-        }
-      } else {
+      final corpoResposta = await resposta.stream.bytesToString();
+      print('Status: ${resposta.statusCode}');
+      print('Resposta da API: $corpoResposta');
+
+      if (resposta.statusCode != 200) {
         throw Exception(
-          'Não foi possível cadastrar a notícia. Todos os campos são obrigatórios.',
+          'Não foi possível cadastrar a notícia.',
         );
+      }
+    } catch (e) {
+      throw Exception('$e');
+    }
+  }
+
+  Future<void> excluirNoticia(int id) async {
+    try {
+      final token = _loginService.getToken();
+
+      final resposta = await http.delete(
+        Uri.parse('$baseUrl/noticias/$id'),
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (resposta.statusCode != 200 && resposta.statusCode != 204) {
+        throw Exception('Não foi possível excluir a notícia.');
       }
     } catch (e) {
       throw Exception('$e');
