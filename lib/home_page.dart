@@ -316,6 +316,50 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                       ),
+                      onLongPress: () {
+                        //if (!_logado) return;
+                        showModalBottomSheet(
+                          context: context,
+                          builder: (sheetContext) {
+                            return Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                ListTile(
+                                  leading: const Icon(Icons.edit),
+                                  title: const Text('Editar'),
+                                  onTap: () async {
+                                    Navigator.pop(sheetContext);
+                                    await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            CadastrarNoticiaPage(
+                                              noticia: noticia,
+                                            ),
+                                      ),
+                                    );
+                                    carregarDados();
+                                  },
+                                ),
+                                ListTile(
+                                  leading: const Icon(
+                                    Icons.delete,
+                                    color: Colors.red,
+                                  ),
+                                  title: const Text('Excluir'),
+                                  onTap: () async {
+                                    Navigator.pop(sheetContext);
+                                    await _noticiasService.excluirNoticia(
+                                      noticia.id,
+                                    );
+                                    carregarDados();
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
                       child: Card(
                         margin: const EdgeInsets.only(bottom: 12),
                         elevation: 0,
